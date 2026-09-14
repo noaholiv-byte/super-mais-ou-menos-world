@@ -35,12 +35,26 @@ class Jogo:
         pyxel.load("character.pyxres")
         self.camera_x=0 
         self.Jogador = Jogador()
+        self.vidas=3
+        self.game_over=False
         pyxel.run(self.update,self.draw)
     def resetar(self):
         self.Jogador=Jogador()
         self.camera_x=0
-    
+    def perder_vida(self):
+        self.vidas-= 1
+        if self.vidas >0:
+            self.resetar()
+        else:
+            self.game_over=True
+        
     def update(self):
+        if self.game_over:
+            if pyxel.btnp(pyxel.KEY_R):
+                self.vidas=3
+                self.game_over=False
+                self.resetar()
+            return
         if pyxel.btnp(pyxel.KEY_R):
             self.resetar()
             return
@@ -70,6 +84,9 @@ class Jogo:
             self.Jogador.dy=0
         self.Jogador.x += dx_corrigido
         self.Jogador.y += dy_corrigido
+        if self.Jogador.y > pyxel.height:
+            self.perder_vida()
+            return
 
         if self.Jogador.x<0:
             self.Jogador.x=0
@@ -96,7 +113,11 @@ class Jogo:
             self.Jogador.V,
             self.Jogador.WIDTH*self.Jogador.direcao,
             self.Jogador.HEIGHT,
-            0
-        )
+            0)
+        pyxel.text(5,5,f"VIDAS: {self.vidas}",7)
+        if self.game_over:
+            pyxel.text(100,60,"Game Over",8)
+            pyxel.text(80,70,"R para reiniciar",7)
+        
 Jogo()
 noah
